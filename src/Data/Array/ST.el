@@ -42,7 +42,7 @@
         (lambda ()
           (setcar sa
                   (seq-sort
-                   (lambda (a b) (< 0 (funcall fromOrdering (psel/funcall compare a b))))
+                   (lambda (a b) (> 0 (funcall fromOrdering (psel/funcall compare a b))))
                    (car sa)))
           sa)))))
 

@@ -42,7 +42,7 @@
   (lambda (empty)
     (lambda (next)
       (lambda (xs)
-        (if (= 0 (length xs))
+        (if (seq-empty-p xs)
             (funcall empty Data.Unit.unit)
            (psel/funcall next (aref xs 0) (seq-drop xs 1)))))))
 
@@ -146,7 +146,8 @@
 (defvar Data.Array.filter
   (lambda (f)
     (lambda (xs)
-      (seq-filter (lambda (a) (funcall f a)) xs))))
+      (seq-into (seq-filter (lambda (a) (funcall f a)) xs)
+                'vector))))
 
 (defvar Data.Array.partition
   (lambda (f)
@@ -189,22 +190,29 @@
     (lambda (fromOrdering)
       (lambda (xs)
         (seq-sort
-         (lambda (a b) (< 0 (funcall fromOrdering (psel/funcall compare a b))))
+         (lambda (a b) (> 0 (funcall fromOrdering (psel/funcall compare a b))))
          xs)))))
 
 (defvar Data.Array.slice
   (lambda (s)
     (lambda (e)
       (lambda (xs)
-        (seq-subseq xs s e)))))
+        (let* ((len (length xs))
+               ($s (min (if (< s 0) (+ len s) s) len))
+               ($e (min (if (< e 0) (+ len e) e) len)))
+          (if (and (< $s $e) (<= 0 $s))
+              (seq-subseq xs $s $e)
+            (make-vector 0 nil)))))))
 
 (defvar Data.Array.zipWith
   (lambda (f)
     (lambda (xs)
       (lambda (ys)
-        (seq-mapn (lambda (x y) (psel/funcall f x y))
-                  xs
-                  ys)))))
+        (seq-into
+         (seq-mapn (lambda (x y) (psel/funcall f x y))
+                   xs
+                   ys)
+         'vector)))))
 
 (defvar Data.Array.any
   (lambda (p)
