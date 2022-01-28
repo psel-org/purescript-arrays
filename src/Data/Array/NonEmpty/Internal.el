@@ -6,7 +6,7 @@
       (let* ((len (length xs))
              (acc (aref xs (1- len)))
              (i (- len 2)))
-        (while (<= i)
+        (while (<= 0 i)
           (setq acc (psel/funcall f (aref xs i) acc))
           (setq i (1- i)))
         acc))))

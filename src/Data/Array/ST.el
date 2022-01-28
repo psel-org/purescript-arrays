@@ -118,4 +118,7 @@
   (lambda (sa)
     (lambda ()
       (let ((xs (car sa)))
-        (seq-map-indexed (lambda (e i) `((value . ,e) (index . ,i))) xs)))))
+        (seq-into
+         (seq-map-indexed (lambda (e i) `((value . ,e) (index . ,i))) xs)
+         'vector)))))
+
